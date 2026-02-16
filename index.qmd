@@ -1,0 +1,191 @@
+---
+title: "Analyzing NYC Payroll Data for Fiscal Year 2025"
+author: Melissa Mugisha Kabalisa
+format: html
+---
+
+## About The Data
+
+The data shows annual salary and job details for each New York City employee from 2014 to 2025. It is collected by the NYC Office of Payroll Administration (OPA). However the data was filtered to only data in the five boroughs of NYC (Bronx, Brooklyn, Manhattan, Queens, Staten Island) and from the fiscal year 2025. Each row represents a city employee salary per fiscal year.
+
+The original dataset can be found [here](https://data.cityofnewyork.us/City-Government/Citywide-Payroll-Data-Fiscal-Year-/k397-673e/data_preview).
+
+## Data Definition
+
+-   `Fiscal Year`: The data was wrangled to have only 2025 data.
+-   `Payroll Number`
+-   `Agency Name`: The Payroll agency that the employee works for
+-   `Last Name`: Last name of employee
+-   `First Name`: First name of employee
+-   `Mid Init`: Middle initial of employee
+-   `Agency Start Date`: Date which employee began working for their current agency
+-   `Work Location Borough`: Borough of employee's primary work location. Filtered to include only NYC boroughs (Bronx, Brooklyn, Manhattan, Queens, Staten Island)
+-   `Title Description`: Civil service title description of the employee
+-   `Leave Status as of June 30`: Status of employee as of the close of the relevant fiscal year: Active, Ceased, or On Leave
+-   `Base Salary`: Base Salary assigned to the employee
+-   `Pay Basis`: Lists whether the employee is paid on an hourly, per diem or annual basis
+-   `Regular Hours`: Number of regular hours employee worked in the fiscal year
+-   `Regular Gross Paid`: The amount paid to the employee for base salary during the fiscal year
+-   `OT Hours`: Overtime Hours worked by employee in the fiscal year
+-   `Total OT Paid`: Total overtime pay paid to the employee in the fiscal year
+-   `Total Other Pay`: Includes any compensation in addition to gross salary and overtime pay, ie Differentials, lump sums, uniform allowance, meal allowance, retroactive pay increases, settlement amounts, and bonus pay, if applicable.
+
+### Bias in the Data
+
+One is that the borough of Staten Island is not at all represented in the data, and while it is the least populated borough, it still has municipal workers.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(stringr)
+library(DescTools)
+library(readr)
+library(readxl)
+
+nyc_payroll_data_2025 <- read_csv("Citywide_Payroll_data_(Fiscal_Year)_20260215.csv")
+
+nyc_payroll_data_2025 <- nyc_payroll_data_2025 |>
+  mutate(`Regular Gross Paid` = parse_number(`Regular Gross Paid`)) |>
+  mutate(`Base Salary` = parse_number(`Base Salary`)) |>
+  mutate(`Total OT Paid` = parse_number(`Total OT Paid`)) |>
+  mutate(`Total Other Pay` = parse_number(`Total Other Pay`)) 
+```
+
+## Summary statistics
+
+### Quantitative variables
+
+#### Regular Hours Worked
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025,
+  aes(
+    x = `Regular Hours`
+  )
+) +
+  geom_freqpoly() +
+  scale_y_continuous(labels = scales::comma)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+regularhours_summary <- nyc_payroll_data_2025 |>
+  summarize(
+    Mean = mean(`Regular Hours`, na.rm=TRUE),
+    Median = median(`Regular Hours`, na.rm=TRUE),
+    SD = sd(`Regular Hours`)
+  )
+regularhours_summary
+```
+
+#### Total OT Paid
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025,
+  aes(
+    x = `Total OT Paid`
+  )
+) +
+  geom_freqpoly() +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+basesalary_summary <- nyc_payroll_data_2025 |>
+  summarize(
+    Mean = mean(`Total OT Paid`, na.rm = TRUE),
+    Median = median(`Total OT Paid`),
+    SD = sd(`Total OT Paid`),
+    Mode = DescTools::Mode(`Total OT Paid`)
+  )
+ basesalary_summary
+```
+
+### Ordinal variables
+
+#### Pay Basis
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025,
+  aes(
+    x = `Pay Basis`
+  )
+) +
+  geom_bar() +
+  labs(
+    y = "Number of City Workers"
+  ) +
+  scale_y_continuous(labels = scales::comma)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+paybasis_summary <- nyc_payroll_data_2025 |>
+  summarize(
+    Mode = DescTools::Mode(`Pay Basis`, na.rm = TRUE)
+  )
+ paybasis_summary
+```
+
+### Categorical variables
+
+#### Work Location Borough
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+nyc_payroll_data_2025 <- nyc_payroll_data_2025 |>
+  filter(`Work Location Borough` %in% c("BROOKLYN", "BRONX", "MANHATTAN", "QUEENS", "STATEN ISLAND"
+  ))
+
+ggplot(
+  nyc_payroll_data_2025, 
+  aes(
+    x = `Work Location Borough`
+  )
+  ) +
+  geom_bar() +
+  labs(
+    y = "Number of City Workers"
+  ) +
+  scale_y_continuous(labels = scales::comma)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+worklocation_summary <- nyc_payroll_data_2025 |>
+  summarize(
+    Mode = DescTools::Mode(`Work Location Borough`, na.rm = TRUE)
+  )
+ worklocation_summary
+```
+
+#### Leave Status as of June 30
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025, 
+  aes(
+    x = `Leave Status as of June 30`
+  )
+  ) +
+  geom_bar() +
+  labs(
+    y = "Number of City Workers"
+  ) +
+  scale_y_continuous(labels = scales::comma)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+leavestatus_summary <- nyc_payroll_data_2025 |>
+  summarize(
+    Mode = DescTools::Mode(`Leave Status as of June 30`)
+  )
+ leavestatus_summary
+```
+
+## Frequency visualizations
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+```
+
+Three visualizations investigating potential relationships between two (or more) variables in the data.\
+Three testable hypotheses about the subject matter, informed by your EDA
