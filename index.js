@@ -1,3 +1,4 @@
+
 window.document.addEventListener("DOMContentLoaded", function (event) {
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
@@ -416,3 +417,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
   });
+  

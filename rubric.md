@@ -26,9 +26,9 @@ YES 1 pts: Website provides a synopsis of the raw data with a link to the source
 
 YES 1 pts: Website includes clear, proofread, succinct writing
 
-__ 1 pt: Website highlights at least one HTML element in response to hovering over it
+YES 1 pt: Website highlights at least one HTML element in response to hovering over it
 
-__ 1 pt: website modifies at least one HTML element repeatedly in response to a button click
+NO 1 pt: website modifies at least one HTML element repeatedly in response to a button click
 
 ### General:
 
@@ -40,6 +40,6 @@ YES 1 pt: Completed `rubric.md` included with submission
 
 YES 1 pt: Browser compiles code with no errors 
 
-__ 1 pt: Interactive components execute fully and consistently with no errors
+YES 1 pt: Interactive components execute fully and consistently with no errors
 
 __ Changelog: Completed `changelog.md` included with submission
