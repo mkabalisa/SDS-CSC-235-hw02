@@ -32,7 +32,7 @@ The original dataset can be found [here](https://data.cityofnewyork.us/City-Gove
 
 ### Bias in the Data
 
-One is that the borough of Staten Island is not at all represented in the data, and while it is the least populated borough, it still has municipal workers.
+The borough of Staten Island is not at all represented in the data, and while it is the least populated borough, it still has municipal workers who are important to the data visualizations and interpretations.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -182,10 +182,44 @@ leavestatus_summary <- nyc_payroll_data_2025 |>
  leavestatus_summary
 ```
 
-## Frequency visualizations
+## Potential relationships
+
+The box plot below implies that workers who are paid on per Annum basis are typically paid much more than workers paid per Day or Hour or Prorated Annual.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025, 
+  aes(
+    x = `Pay Basis`,
+    y = `Base Salary`
+  )
+  ) +
+  geom_boxplot() +
+  scale_y_continuous(labels = scales::comma)
 ```
 
-Three visualizations investigating potential relationships between two (or more) variables in the data.\
-Three testable hypotheses about the subject matter, informed by your EDA
+The boxplot below implies that typically, workers outside Manhattan work more hours than the typical Manhattan municipal worker. However, the Manhattan plot has many dots implying that the lower median work hours may be related to the fact that Manhattan has the most municipal workers.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025, 
+  aes(
+    y = `Regular Hours`,
+    x = `Work Location Borough`
+  )
+  ) +
+  geom_boxplot() +
+  scale_y_continuous(labels = scales::comma)
+```
+
+The boxplot below implies that the ceased and seasonal workers, who get paid a typically lower income than the typical active and on-separation-leave workers, may have left their jobs in pursuit of higher regular annual salaries.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(
+  nyc_payroll_data_2025, 
+  aes(
+    y = `Regular Gross Paid`,
+    x = `Leave Status as of June 30`
+  )
+  ) +
+  geom_boxplot() +
+  scale_y_continuous(labels = scales::comma)
+```

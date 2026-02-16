@@ -14,9 +14,9 @@ YES 3 pts: Summary statistics for at least 2 quantitative variables, 2 ordinal v
 
 YES 3 pts: Distribution / Frequency visualizations
 
-__ 3 pts: Three visualizations investigating potential relationships between two (or more) variables in the data
+YES 3 pts: Three visualizations investigating potential relationships between two (or more) variables in the data
 
-__ 3 pts: Three testable hypotheses about the subject matter, informed by your EDA 
+YES 3 pts: Three testable hypotheses about the subject matter, informed by your EDA 
 
 ### Phase 2:
 
@@ -32,9 +32,9 @@ __ 1 pt: website modifies at least one HTML element repeatedly in response to a 
 
 ### General:
 
-__ 1 pt: CSS is in an external file, not coded directly in the `.html` file
+YES 1 pt: CSS is in an external file, not coded directly in the `.html` file
 
-__ 1 pt: JS is in an external file, not coded directly in the `.html` file
+YES 1 pt: JS is in an external file, not coded directly in the `.html` file
 
 YES 1 pt: Completed `rubric.md` included with submission
 
