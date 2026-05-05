@@ -40,6 +40,7 @@ library(stringr)
 library(DescTools)
 library(readr)
 library(readxl)
+library(RColorBrewer)
 
 nyc_payroll_data_2025 <- read_csv("Citywide_Payroll_data_(Fiscal_Year)_20260215.csv")
 
@@ -59,12 +60,15 @@ nyc_payroll_data_2025 <- nyc_payroll_data_2025 |>
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(
   nyc_payroll_data_2025,
-  aes(
-    x = `Regular Hours`
+  aes(x = `Regular Hours`)
+) + 
+  geom_histogram(bins = 15, fill = "#0d4166", color = "lightgrey") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Distribution of Regular Hours Worked",
+    x = "Regular Hours",
+    y = "Frequency (Number of Employees)"
   )
-) +
-  geom_freqpoly() +
-  scale_y_continuous(labels = scales::comma)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -82,13 +86,16 @@ regularhours_summary
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(
   nyc_payroll_data_2025,
-  aes(
-    x = `Total OT Paid`
-  )
+  aes(x = `Total OT Paid`)
 ) +
-  geom_freqpoly() +
+  geom_histogram(fill = "#0d4166", color = "white", bins = 45) +
   scale_x_continuous(labels = scales::comma) +
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Distribution of Overtime Pay",
+    x = "Total OT Paid ($)",
+    y = "Frequency"
+  )
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -113,7 +120,7 @@ ggplot(
     x = `Pay Basis`
   )
 ) +
-  geom_bar() +
+  geom_bar(fill = "#0d4166", color = "lightgrey") +
   labs(
     y = "Number of City Workers"
   ) +
@@ -121,11 +128,22 @@ ggplot(
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-paybasis_summary <- nyc_payroll_data_2025 |>
-  summarize(
-    Mode = DescTools::Mode(`Pay Basis`, na.rm = TRUE)
-  )
- paybasis_summary
+pay_basis_stats <- nyc_payroll_data_2025 |>
+  group_by(`Pay Basis`) |>
+  summarise(
+    Frequency = n()
+  ) |>
+  mutate(
+    Percentage = (Frequency / sum(Frequency)) * 100,
+    `Cumulative %` = cumsum(Percentage)
+  ) |>
+  arrange(desc(Frequency))
+
+pay_basis_mode <- DescTools::Mode(nyc_payroll_data_2025$`Pay Basis`, na.rm = TRUE)
+
+print("Summary Table: Pay Basis")
+print(pay_basis_stats)
+cat("The Mode for Pay Basis is:", pay_basis_mode)
 ```
 
 ### Categorical variables
@@ -143,7 +161,7 @@ ggplot(
     x = `Work Location Borough`
   )
   ) +
-  geom_bar() +
+  geom_bar(fill = "#0d4166", color = "lightgrey") +
   labs(
     y = "Number of City Workers"
   ) +
@@ -152,9 +170,13 @@ ggplot(
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 worklocation_summary <- nyc_payroll_data_2025 |>
-  summarize(
-    Mode = DescTools::Mode(`Work Location Borough`, na.rm = TRUE)
-  )
+  count(`Work Location Borough`, name = "Count") |>
+  mutate(
+    Proportion = Count / sum(Count),
+    is_Mode = `Work Location Borough` %in% DescTools::Mode(nyc_payroll_data_2025$`Work Location Borough`, na.rm = TRUE)
+  ) |>
+  arrange(desc(Proportion))
+
  worklocation_summary
 ```
 
@@ -167,7 +189,7 @@ ggplot(
     x = `Leave Status as of June 30`
   )
   ) +
-  geom_bar() +
+  geom_bar(fill = "#0d4166", color = "lightgrey") +
   labs(
     y = "Number of City Workers"
   ) +
@@ -176,15 +198,42 @@ ggplot(
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 leavestatus_summary <- nyc_payroll_data_2025 |>
-  summarize(
-    Mode = DescTools::Mode(`Leave Status as of June 30`)
-  )
+  count(`Leave Status as of June 30`, name = "Count") |>
+  mutate(
+    Proportion = Count / sum(Count),
+    is_Mode = `Leave Status as of June 30` %in% DescTools::Mode(nyc_payroll_data_2025$`Leave Status as of June 30`, na.rm = TRUE)
+  ) |>
+  arrange(desc(Proportion))
+
  leavestatus_summary
+```
+
+#### Summary for Categorical Variable: Agency Name (Top 10)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+agency_summary <- nyc_payroll_data_2025 |>
+  count(`Agency Name`, name = "Employee_Count") |>
+  mutate(Proportion = Employee_Count / sum(Employee_Count)) |>
+  slice_max(order_by = Employee_Count, n = 10) |>
+  arrange(desc(Employee_Count))
+
+# Calculate Diversity Metric: Number of Unique Agencies
+unique_agencies <- length(unique(nyc_payroll_data_2025$`Agency Name`))
+
+print("Top 10 NYC Agencies by Employee Count")
+print(agency_summary)
+cat("Total number of unique agencies represented:", unique_agencies)
 ```
 
 ## Potential relationships
 
-The box plot below implies that workers who are paid on per Annum basis are typically paid much more than workers paid per Day or Hour or Prorated Annual.
+### Pay Basis and Base Salary
+
+#### Testable Hypotheses
+
+Null hypothesis: There is no difference in base salary across pay bases.
+
+Alternative hypothesis: Some pay bases receive higher base salaries than others.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(
@@ -194,11 +243,20 @@ ggplot(
     y = `Base Salary`
   )
   ) +
-  geom_boxplot() +
+  geom_boxplot(color="#0d4166") +
   scale_y_continuous(labels = scales::comma)
 ```
 
-The boxplot below implies that typically, workers outside Manhattan work more hours than the typical Manhattan municipal worker. However, the Manhattan plot has many dots implying that the lower median work hours may be related to the fact that Manhattan has the most municipal workers.
+The boxplot indicates a significant disparity in pay scales based on the Pay Basis. Workers paid per Annum have a much higher and more concentrated median salary compared to Hourly or Per Diem workers. The Prorated Annual category shows the most significant variance/skewing, and underlying reasons for this variation cannot be determined from this boxplot alone.
+
+### Regular Hours and Work Location Borough
+
+#### Testable Hypotheses 
+
+Null hypothesis: There is no difference/variability in regular hours worked across NYC boroughs.
+
+Alternative hypothesis: Some NYC borough(s) display more regular hours worked than others. 
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(
   nyc_payroll_data_2025, 
@@ -207,19 +265,30 @@ ggplot(
     x = `Work Location Borough`
   )
   ) +
-  geom_boxplot() +
+  geom_boxplot(color="#0d4166") +
   scale_y_continuous(labels = scales::comma)
 ```
 
-The boxplot below implies that the ceased and seasonal workers, who get paid a typically lower income than the typical active and on-separation-leave workers, may have left their jobs in pursuit of higher regular annual salaries.
+While the median regular hours appear similar across boroughs, Manhattan shows a wider spread and more extreme values, indicating greater variability in hours worked. However, the plot does not provide enough information to infer why the differences in median hours.
+
+### Regular Gross Paid and Leave Status as of June 30
+
+#### Testable Hypotheses 
+
+Null hypothesis: There is no difference in gross pay across leave status.
+
+Alternative hypothesis: Employees with certain leave statuses receive a higher gross pay than others. 
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(
   nyc_payroll_data_2025, 
   aes(
     y = `Regular Gross Paid`,
     x = `Leave Status as of June 30`
-  )
+  ) 
   ) +
-  geom_boxplot() +
+  geom_boxplot(color="#0d4166") +
   scale_y_continuous(labels = scales::comma)
 ```
+
+Employees with Active or On Leave status tend to have higher regular gross pay, while those marked ‘Ceased’ have lower values. This pattern may show differences in time worked during the fiscal year, but this cannot be confirmed without additional data.

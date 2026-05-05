@@ -20,7 +20,7 @@ YES 3 pts: Three testable hypotheses about the subject matter, informed by your 
 
 ### Phase 2:
 
-YES 4 pts: Website is well formatted with appropriate titles, headings, page divisions, etc.. 
+PART 4 pts: Website is well formatted with appropriate titles, headings, page divisions, etc.. 
 
 YES 1 pts: Website provides a synopsis of the raw data with a link to the source, brief overview of what the data captures, and brief discussion of biases present in the data 
 
@@ -42,4 +42,4 @@ YES 1 pt: Browser compiles code with no errors
 
 YES 1 pt: Interactive components execute fully and consistently with no errors
 
-__ Changelog: Completed `changelog.md` included with submission
+YES Changelog: Completed `changelog.md` included with submission
