@@ -41,6 +41,7 @@ library(DescTools)
 library(readr)
 library(readxl)
 library(RColorBrewer)
+library(knitr)
 
 nyc_payroll_data_2025 <- read_csv("Citywide_Payroll_data_(Fiscal_Year)_20260215.csv")
 
@@ -49,6 +50,15 @@ nyc_payroll_data_2025 <- nyc_payroll_data_2025 |>
   mutate(`Base Salary` = parse_number(`Base Salary`)) |>
   mutate(`Total OT Paid` = parse_number(`Total OT Paid`)) |>
   mutate(`Total Other Pay` = parse_number(`Total Other Pay`)) 
+```
+
+```{r results='asis', echo=FALSE}
+cat('
+<div style="margin-bottom: 20px;">
+  <button id="toggleButton" onclick="toggleHighlight()" style="padding: 5px 10px; background-color: #0d4166; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Toggle Table Highlight
+  </button>
+</div>')
 ```
 
 ## Summary statistics
@@ -78,6 +88,7 @@ regularhours_summary <- nyc_payroll_data_2025 |>
     Median = median(`Regular Hours`, na.rm=TRUE),
     SD = sd(`Regular Hours`)
   )
+regularhours_summary <- kable(regularhours_summary)
 regularhours_summary
 ```
 
@@ -106,6 +117,7 @@ basesalary_summary <- nyc_payroll_data_2025 |>
     SD = sd(`Total OT Paid`),
     Mode = DescTools::Mode(`Total OT Paid`)
   )
+ basesalary_summary <- kable(basesalary_summary)
  basesalary_summary
 ```
 
@@ -141,10 +153,11 @@ pay_basis_stats <- nyc_payroll_data_2025 |>
 
 pay_basis_mode <- DescTools::Mode(nyc_payroll_data_2025$`Pay Basis`, na.rm = TRUE)
 
-print("Summary Table: Pay Basis")
-print(pay_basis_stats)
-cat("The Mode for Pay Basis is:", pay_basis_mode)
+pay_basis_stats <- kable(pay_basis_stats)
+pay_basis_stats
 ```
+
+The Mode for Pay Basis is `r pay_basis_mode`.
 
 ### Categorical variables
 
@@ -177,7 +190,7 @@ worklocation_summary <- nyc_payroll_data_2025 |>
   ) |>
   arrange(desc(Proportion))
 
- worklocation_summary
+ worklocation_summary <- kable(worklocation_summary)
 ```
 
 #### Leave Status as of June 30
@@ -205,10 +218,11 @@ leavestatus_summary <- nyc_payroll_data_2025 |>
   ) |>
   arrange(desc(Proportion))
 
+ leavestatus_summary <- kable(leavestatus_summary)
  leavestatus_summary
 ```
 
-#### Summary for Categorical Variable: Agency Name (Top 10)
+#### Categorical Variable: Top 10 NYC Agencies by Employee Count
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 agency_summary <- nyc_payroll_data_2025 |>
@@ -217,13 +231,13 @@ agency_summary <- nyc_payroll_data_2025 |>
   slice_max(order_by = Employee_Count, n = 10) |>
   arrange(desc(Employee_Count))
 
-# Calculate Diversity Metric: Number of Unique Agencies
 unique_agencies <- length(unique(nyc_payroll_data_2025$`Agency Name`))
 
-print("Top 10 NYC Agencies by Employee Count")
-print(agency_summary)
-cat("Total number of unique agencies represented:", unique_agencies)
+agency_summary <- kable(agency_summary)
+agency_summary
 ```
+
+Total number of unique agencies represented: `r unique_agencies`
 
 ## Potential relationships
 

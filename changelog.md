@@ -7,9 +7,9 @@ In order to receive a regrade on this submission you **must** fully answer the f
 I added summary statistics for an ordinal and a categorical variable.
 I corrected the visualization type for distribution/frequency.
 I revised the conclusions and descriptions for some of my visualizations.
-I presented three testable hypotheses based on my EDA.
+I presented three testable hypotheses based on my EDA and tested them with visualizations.
 I improved the formatting of the document/webpage, such that the final output does not include my code. 
-I added an interactive feature, such that on a button click, an HTML element is modified.
+I added a button interaction that modifies an HTML element (highlights & unhighlights the table contents).
 
 ## 2. Reflect on your experience prioritizing, working on, and completing this assignment. Moving forward, what changes will you make in these areas to work towards better first submissions of assignments? 
 

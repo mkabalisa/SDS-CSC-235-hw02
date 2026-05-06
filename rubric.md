@@ -20,7 +20,7 @@ YES 3 pts: Three testable hypotheses about the subject matter, informed by your 
 
 ### Phase 2:
 
-PART 4 pts: Website is well formatted with appropriate titles, headings, page divisions, etc.. 
+YES 4 pts: Website is well formatted with appropriate titles, headings, page divisions, etc.. 
 
 YES 1 pts: Website provides a synopsis of the raw data with a link to the source, brief overview of what the data captures, and brief discussion of biases present in the data 
 
@@ -28,7 +28,7 @@ YES 1 pts: Website includes clear, proofread, succinct writing
 
 YES 1 pt: Website highlights at least one HTML element in response to hovering over it
 
-NO 1 pt: website modifies at least one HTML element repeatedly in response to a button click
+YES 1 pt: website modifies at least one HTML element repeatedly in response to a button click
 
 ### General:
 
